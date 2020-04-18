@@ -1,4 +1,4 @@
-module go-parser-it
+module github.com/lucky-libora/go-parse-it
 
 go 1.14
 
