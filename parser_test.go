@@ -1,8 +1,8 @@
 package go_parser_it
 
 import (
+	"github.com/lucky-libora/go-parse-it/node"
 	"github.com/stretchr/testify/assert"
-	"go-parser-it/node"
 	"strings"
 	"testing"
 )

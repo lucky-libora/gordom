@@ -1,7 +1,7 @@
 package go_parser_it
 
 import (
-	"go-parser-it/node"
+	"github.com/lucky-libora/go-parse-it/node"
 	"reflect"
 	"strconv"
 	"strings"
