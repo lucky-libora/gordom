@@ -1,7 +1,7 @@
-# Go Parse It 
+# GorDom 
 
 
-Go-Parse-It is a simple html parser written in Go (Golang). It features a declarative way to parse html pages.
+GorDom is a simple html parser written in Go (Golang). It features a declarative way to parse html pages.
 
 
 ## Contents
