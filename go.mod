@@ -1,4 +1,4 @@
-module github.com/lucky-libora/go-parse-it
+module github.com/lucky-libora/gordom
 
 go 1.14
 

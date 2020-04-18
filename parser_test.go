@@ -1,9 +1,7 @@
-package go_parser_it
+package gordom
 
 import (
-	"github.com/lucky-libora/go-parse-it/node"
 	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
 )
 
@@ -12,7 +10,7 @@ type Text struct {
 }
 
 func TestParse(t *testing.T) {
-	s := `
+	html := `
 	<html>
 	<head>
 		<meta>
@@ -24,9 +22,46 @@ func TestParse(t *testing.T) {
 		<div id="text">SomeText</div>
 	</body>
  	`
-	doc := node.ParseHtml(strings.NewReader(s))
-	text := Parse(doc, Text{}).(Text)
+	text := &Text{}
+	err := Parse(html, text)
+	assert.Nil(t, err)
 	assert.Equal(t, "SomeText", text.Text)
+}
+
+func TestParseNotPointer(t *testing.T) {
+	html := `
+	<html>
+	<head>
+		<meta>
+	</head>
+	<body>
+		<div id="main" class="main test">
+			<img id="img" src="img.png"/>
+		</div>
+		<div id="text">SomeText</div>
+	</body>
+ 	`
+	text := Text{}
+	err := Parse(html, text)
+	assert.NotNil(t, err)
+}
+
+func TestParseNotStruct(t *testing.T) {
+	html := `
+	<html>
+	<head>
+		<meta>
+	</head>
+	<body>
+		<div id="main" class="main test">
+			<img id="img" src="img.png"/>
+		</div>
+		<div id="text">SomeText</div>
+	</body>
+ 	`
+	text := ""
+	err := Parse(html, &text)
+	assert.NotNil(t, err)
 }
 
 type NotFound struct {
@@ -34,7 +69,7 @@ type NotFound struct {
 }
 
 func TestParseNotFound(t *testing.T) {
-	s := `
+	html := `
 	<html>
 	<head>
 		<meta>
@@ -46,9 +81,10 @@ func TestParseNotFound(t *testing.T) {
 		<div id="text">SomeText</div>
 	</body>
  	`
-	doc := node.ParseHtml(strings.NewReader(s))
-	text := Parse(doc, NotFound{}).(NotFound)
-	assert.Equal(t, "", text.Text)
+	notFound := &NotFound{}
+	err := Parse(html, notFound)
+	assert.Nil(t, err)
+	assert.Equal(t, "", notFound.Text)
 }
 
 type NoQuery struct {
@@ -56,7 +92,7 @@ type NoQuery struct {
 }
 
 func TestParseNoQuery(t *testing.T) {
-	s := `
+	html := `
 	<html>
 	<head>
 		<meta>
@@ -65,28 +101,10 @@ func TestParseNoQuery(t *testing.T) {
 		Test
 	</body>
  	`
-	doc := node.ParseHtml(strings.NewReader(s))
-	text := Parse(doc, NoQuery{}).(NoQuery)
-	assert.Equal(t, "Test", text.Text)
-}
-
-type NoQueryCollection struct {
-	NoQuery []NoQuery
-}
-
-func TestParseNoQueryArray(t *testing.T) {
-	s := `
-	<html>
-	<head>
-		<meta>
-	</head>
-	<body>
-		Test
-	</body>
- 	`
-	doc := node.ParseHtml(strings.NewReader(s))
-	text := Parse(doc, NoQueryCollection{}).(NoQueryCollection)
-	assert.Equal(t, "Test", text.NoQuery[0].Text)
+	noQuery := &NoQuery{}
+	err := Parse(html, noQuery)
+	assert.Nil(t, err)
+	assert.Equal(t, "Test", noQuery.Text)
 }
 
 type Float struct {
@@ -94,7 +112,7 @@ type Float struct {
 }
 
 func TestParseFloat(t *testing.T) {
-	s := `
+	html := `
 	<html>
 	<head>
 		<meta>
@@ -105,10 +123,29 @@ func TestParseFloat(t *testing.T) {
 		</div>
 		<div id="text">3.14333</div>
 	</body>
- 	`
-	doc := node.ParseHtml(strings.NewReader(s))
-	text := Parse(doc, Float{}).(Float)
-	assert.Equal(t, 3.14333, text.Value)
+	`
+	float := &Float{}
+	err := Parse(html, float)
+	assert.Nil(t, err)
+	assert.Equal(t, 3.14333, float.Value)
+}
+
+func TestParseFloatError(t *testing.T) {
+	html := `
+	<html>
+	<head>
+		<meta>
+	</head>
+	<body>
+		<div id="main" class="main test">
+			<img id="img" src="img.png"/>
+		</div>
+		<div id="text">blabla</div>
+	</body>
+	`
+	float := &Float{}
+	err := Parse(html, float)
+	assert.NotNil(t, err)
 }
 
 type Int struct {
@@ -116,7 +153,7 @@ type Int struct {
 }
 
 func TestParseInt(t *testing.T) {
-	s := `
+	html := `
 	<html>
 	<head>
 		<meta>
@@ -127,10 +164,29 @@ func TestParseInt(t *testing.T) {
 		</div>
 		<div id="text">3</div>
 	</body>
- 	`
-	doc := node.ParseHtml(strings.NewReader(s))
-	text := Parse(doc, Int{}).(Int)
-	assert.Equal(t, int32(3), text.Value)
+	`
+	i := &Int{}
+	err := Parse(html, i)
+	assert.Nil(t, err)
+	assert.Equal(t, int32(3), i.Value)
+}
+
+func TestParseIntError(t *testing.T) {
+	html := `
+	<html>
+	<head>
+		<meta>
+	</head>
+	<body>
+		<div id="main" class="main test">
+			<img id="img" src="img.png"/>
+		</div>
+		<div id="text">3.14</div>
+	</body>
+	`
+	i := &Int{}
+	err := Parse(html, i)
+	assert.NotNil(t, err)
 }
 
 type UInt struct {
@@ -138,7 +194,7 @@ type UInt struct {
 }
 
 func TestParseUInt(t *testing.T) {
-	s := `
+	html := `
 	<html>
 	<head>
 		<meta>
@@ -149,10 +205,29 @@ func TestParseUInt(t *testing.T) {
 		</div>
 		<div id="text">3</div>
 	</body>
- 	`
-	doc := node.ParseHtml(strings.NewReader(s))
-	text := Parse(doc, UInt{}).(UInt)
-	assert.Equal(t, uint32(3), text.Value)
+	`
+	ui := &UInt{}
+	err := Parse(html, ui)
+	assert.Nil(t, err)
+	assert.Equal(t, uint32(3), ui.Value)
+}
+
+func TestParseUIntError(t *testing.T) {
+	html := `
+	<html>
+	<head>
+		<meta>
+	</head>
+	<body>
+		<div id="main" class="main test">
+			<img id="img" src="img.png"/>
+		</div>
+		<div id="text">-3</div>
+	</body>
+	`
+	ui := &UInt{}
+	err := Parse(html, ui)
+	assert.NotNil(t, err)
 }
 
 type Struct struct {
@@ -163,7 +238,7 @@ type Struct struct {
 }
 
 func TestParseStruct(t *testing.T) {
-	s := `
+	html := `
 	<html>
 	<head>
 		<meta>
@@ -174,10 +249,32 @@ func TestParseStruct(t *testing.T) {
 		</div>
 		<div id="text">3</div>
 	</body>
- 	`
-	doc := node.ParseHtml(strings.NewReader(s))
-	str := Parse(doc, Struct{}).(Struct)
-	assert.Equal(t, uint32(3), str.UInt.Value)
+	`
+	s := &Struct{}
+	err := Parse(html, s)
+	assert.Nil(t, err)
+	assert.Equal(t, "3", s.Text.Text)
+	assert.Equal(t, float64(3), s.Float.Value)
+	assert.Equal(t, int32(3), s.Int.Value)
+	assert.Equal(t, uint32(3), s.UInt.Value)
+}
+
+func TestParseStructError(t *testing.T) {
+	html := `
+	<html>
+	<head>
+		<meta>
+	</head>
+	<body>
+		<div id="main" class="main test">
+			<img id="img" src="img.png"/>
+		</div>
+		<div id="text">blabla</div>
+	</body>
+	`
+	s := &Struct{}
+	err := Parse(html, s)
+	assert.NotNil(t, err)
 }
 
 type Image struct {
@@ -189,7 +286,7 @@ type ImageCollection struct {
 }
 
 func TestParseArray(t *testing.T) {
-	s := `
+	html := `
 	<html>
 	<head>
 		<meta>
@@ -201,8 +298,34 @@ func TestParseArray(t *testing.T) {
 			<img src="img3.png"/>
 		</div>
 	</body>
- 	`
-	doc := node.ParseHtml(strings.NewReader(s))
-	ic := Parse(doc, ImageCollection{}).(ImageCollection)
+	`
+	ic := &ImageCollection{}
+	err := Parse(html, ic)
+	assert.Nil(t, err)
 	assert.Equal(t, 3, len(ic.Images))
+	for _, img := range ic.Images {
+		assert.NotNil(t, img)
+	}
+}
+
+type GitHubProjectFile struct {
+	Link string `value:"[href]"`
+	Name string
+}
+
+type GitHubProject struct {
+	Files []GitHubProjectFile `$:".js-navigation-item > .content a"`
+}
+
+func TestParseFromUrl(t *testing.T) {
+	project := &GitHubProject{}
+	err := ParseFromUrl("https://github.com/lucky-libora/go-parse-it", project)
+	assert.Nil(t, err)
+	assert.NotEmpty(t, project.Files)
+}
+
+func TestParseFromUrlError(t *testing.T) {
+	project := &GitHubProject{}
+	err := ParseFromUrl("https://github404/", project)
+	assert.NotNil(t, err)
 }
