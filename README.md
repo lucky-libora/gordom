@@ -13,7 +13,7 @@ GorDom is a simple html parser written in Go (Golang). It features a declarative
 
 ## Installation
 
-To install Gin package, you need to install Go and set your Go workspace first.
+To install GorDom package, you need to install Go and set your Go workspace first.
 
 1. The first need [Go](https://golang.org/) installed, then you can use the below Go command to install Gin.
 
