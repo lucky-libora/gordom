@@ -88,7 +88,12 @@ func startTagHandler(tokenizer *html.Tokenizer, node *Node) *Node {
 }
 
 func textTokenHandler(tokenizer *html.Tokenizer, node *Node) *Node {
-	node.Text += cleanText(string(tokenizer.Text()))
+
+	text := cleanText(string(tokenizer.Text()))
+	if len(text) != 0 {
+		child := node.CreateChild("")
+		child.Text = text
+	}
 	return node
 }
 

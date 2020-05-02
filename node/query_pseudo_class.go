@@ -26,7 +26,7 @@ func parameterizedPseudoCheck(expr string) Checker {
 	value := strings.Trim(temp, "()'")
 	if strings.HasPrefix(expr, "contains") {
 		return func(node *Node) bool {
-			return strings.Contains(node.Text, value)
+			return strings.Contains(node.InnerText(), value)
 		}
 	}
 	if strings.HasPrefix(expr, "has") {

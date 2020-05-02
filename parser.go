@@ -19,7 +19,7 @@ func getValue(n *node.Node, typeField reflect.StructField) string {
 		attrKey := strings.Trim(valueTag, "[]")
 		return n.Attrs[attrKey]
 	}
-	return n.Text
+	return n.InnerText()
 }
 
 func findMany(n *node.Node, typeField reflect.StructField) []*node.Node {

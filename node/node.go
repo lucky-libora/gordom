@@ -57,6 +57,14 @@ func (node *Node) HasClass(class string) bool {
 	return false
 }
 
+func (node *Node) InnerText() string {
+	res := node.Text
+	node.ForEachChild(func(child *Node) {
+		res += child.InnerText()
+	})
+	return res
+}
+
 func (node *Node) LastChild() *Node {
 	if !node.HasChildren() {
 		return nil
