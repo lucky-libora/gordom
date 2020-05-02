@@ -1,7 +1,7 @@
 package node
 
 type queryTokenType = byte
-type NodeChecker = func(node *Node) bool
+type Checker = func(node *Node) bool
 
 const (
 	noneToken                queryTokenType = 1
@@ -17,11 +17,23 @@ const (
 	precededToken            queryTokenType = 11
 )
 
-func composeCheckers(checker1 NodeChecker, checker2 NodeChecker) NodeChecker {
+func composeCheckersAnd(checker1 Checker, checker2 Checker) Checker {
 	return func(node *Node) bool {
 		if !checker1(node) {
 			return false
 		}
 		return checker2 == nil || checker2(node)
+	}
+}
+
+func composeCheckersOr(checker1 Checker, checker2 Checker) Checker {
+	return func(node *Node) bool {
+		if checker1(node) {
+			return true
+		}
+		if checker2 == nil {
+			return false
+		}
+		return checker2(node)
 	}
 }

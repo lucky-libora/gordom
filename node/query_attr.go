@@ -30,7 +30,7 @@ var attrsComparatorMap = map[string]attrComparator{
 	},
 }
 
-func attrCheck(expr string) NodeChecker {
+func attrCheck(expr string) Checker {
 	if !strings.Contains(expr, "=") {
 		return func(node *Node) bool {
 			_, has := node.Attrs[expr]

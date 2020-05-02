@@ -4,20 +4,20 @@ import (
 	"regexp"
 )
 
-func CompileQuery(query string) NodeChecker {
+func CompileQuery(query string) Checker {
 	q := prepareQuery(query)
 	token := ""
 	tokenType := noneToken
-	var checker NodeChecker
+	var checker Checker
 
 	addChecker := func() {
 		if len(token) == 0 {
 			return
 		}
 		prevChecker := checker
-		newChecker := compileSingleQuery(token)
+		newChecker := compileOrQuery(token)
 
-		checker = composeCheckers(newChecker, prevChecker)
+		checker = composeCheckersAnd(newChecker, prevChecker)
 
 		switch tokenType {
 		case parentToken:
@@ -77,7 +77,7 @@ func CompileQuery(query string) NodeChecker {
 	return checker
 }
 
-func parentTransformer(checker NodeChecker) NodeChecker {
+func parentTransformer(checker Checker) Checker {
 	return func(node *Node) bool {
 		if node.Parent == nil {
 			return false
@@ -86,7 +86,7 @@ func parentTransformer(checker NodeChecker) NodeChecker {
 	}
 }
 
-func descendantTransformer(checker NodeChecker) NodeChecker {
+func descendantTransformer(checker Checker) Checker {
 	return func(node *Node) bool {
 		for _, parent := range node.Parents() {
 			if checker(parent) {
@@ -97,7 +97,7 @@ func descendantTransformer(checker NodeChecker) NodeChecker {
 	}
 }
 
-func precededTransformer(checker NodeChecker) NodeChecker {
+func precededTransformer(checker Checker) Checker {
 	return func(node *Node) bool {
 		for _, brother := range node.PrevBrothers() {
 			if brother != node && checker(brother) {
@@ -108,7 +108,7 @@ func precededTransformer(checker NodeChecker) NodeChecker {
 	}
 }
 
-func immediatelyPrecededTransformer(checker NodeChecker) NodeChecker {
+func immediatelyPrecededTransformer(checker Checker) Checker {
 	return func(node *Node) bool {
 		prevBrother := node.PrevBrother()
 		if prevBrother == nil {
@@ -147,6 +147,14 @@ var regexes = []regexReplace{
 	{
 		regex: regexp.MustCompile(`~\s`),
 		s:     "~",
+	},
+	{
+		regex: regexp.MustCompile(`\s,`),
+		s:     ",",
+	},
+	{
+		regex: regexp.MustCompile(`,\s`),
+		s:     ",",
 	},
 }
 

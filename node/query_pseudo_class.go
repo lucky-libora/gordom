@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-func pseudoClassCheck(expr string) NodeChecker {
+func pseudoClassCheck(expr string) Checker {
 	switch expr {
 	case "empty":
 		return emptyCheck
@@ -21,7 +21,7 @@ func pseudoClassCheck(expr string) NodeChecker {
 	return falseCheck
 }
 
-func parameterizedPseudoCheck(expr string) NodeChecker {
+func parameterizedPseudoCheck(expr string) Checker {
 	temp := strings.Split(expr, "(")[1]
 	value := strings.Trim(temp, "()'")
 	if strings.HasPrefix(expr, "contains") {

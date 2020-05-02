@@ -1,15 +1,15 @@
 package node
 
-func compileSingleQuery(query string) NodeChecker {
+func compileSingleQuery(query string) Checker {
 	token := ""
 	tokenType := noneToken
-	var checker NodeChecker
+	var checker Checker
 
 	appendCheck := func() {
 		if len(token) == 0 {
 			return
 		}
-		var newChecker NodeChecker
+		var newChecker Checker
 		switch tokenType {
 		case tagToken:
 			newChecker = tagCheck(token)
@@ -25,7 +25,7 @@ func compileSingleQuery(query string) NodeChecker {
 			newChecker = pseudoClassCheck(token)
 		}
 		if newChecker != nil {
-			checker = composeCheckers(newChecker, checker)
+			checker = composeCheckersAnd(newChecker, checker)
 		}
 		tokenType = noneToken
 		token = ""
@@ -85,19 +85,19 @@ func compileSingleQuery(query string) NodeChecker {
 	return checker
 }
 
-func tagCheck(token string) NodeChecker {
+func tagCheck(token string) Checker {
 	return func(node *Node) bool {
 		return node.Tag == token
 	}
 }
 
-func classCheck(token string) NodeChecker {
+func classCheck(token string) Checker {
 	return func(node *Node) bool {
 		return node.HasClass(token)
 	}
 }
 
-func idCheck(token string) NodeChecker {
+func idCheck(token string) Checker {
 	return func(node *Node) bool {
 		return node.Id == token
 	}
