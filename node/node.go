@@ -60,6 +60,9 @@ func (node *Node) HasClass(class string) bool {
 func (node *Node) InnerText() string {
 	res := node.Text
 	node.ForEachChild(func(child *Node) {
+		if len(res) != 0 {
+			res += " "
+		}
 		res += child.InnerText()
 	})
 	return res
