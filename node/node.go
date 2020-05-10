@@ -5,13 +5,14 @@ import (
 )
 
 type Node struct {
-	Attrs    map[string]string `json:"attrs"`
-	Children []*Node           `json:"children"`
-	Classes  []string          `json:"classes"`
-	Id       string            `json:"id"`
-	Parent   *Node             `json:"-"`
-	Tag      string            `json:"tag"`
-	Text     string            `json:"text"`
+	Attrs     map[string]string `json:"attrs"`
+	Children  []*Node           `json:"children"`
+	Classes   []string          `json:"classes"`
+	Id        string            `json:"id"`
+	Parent    *Node             `json:"-"`
+	Tag       string            `json:"tag"`
+	Text      string            `json:"text"`
+	innerText string            `json:"-"`
 }
 
 func NewNode(tag string, parent *Node) *Node {
@@ -58,6 +59,10 @@ func (node *Node) HasClass(class string) bool {
 }
 
 func (node *Node) InnerText() string {
+	if node.innerText != "" {
+		return node.innerText
+	}
+
 	res := node.Text
 	node.ForEachChild(func(child *Node) {
 		if len(res) != 0 {
@@ -65,6 +70,7 @@ func (node *Node) InnerText() string {
 		}
 		res += child.InnerText()
 	})
+	node.innerText = res
 	return res
 }
 
