@@ -122,7 +122,7 @@ func ParseHtml(reader io.Reader) *Document {
 	htmlNode := root.FirstChild()
 	htmlNode.Parent = nil
 
-	head := htmlNode.FilterByTag("head")[0]
-	body := htmlNode.FilterByTag("body")[0]
+	head := htmlNode.SelectOne("head")
+	body := htmlNode.SelectOne("body")
 	return NewDocument(body, head)
 }

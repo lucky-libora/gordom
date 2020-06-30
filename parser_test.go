@@ -314,7 +314,7 @@ type GitHubProjectFile struct {
 }
 
 type GitHubProject struct {
-	Files []GitHubProjectFile `$:".js-navigation-item > .content a"`
+	Files []GitHubProjectFile `$:"a.js-navigation-open"`
 }
 
 func TestParseFromUrl(t *testing.T) {
